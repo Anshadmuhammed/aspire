@@ -1,0 +1,1408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aspire Education</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Big+Shoulders+Display:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+
+:root{
+  --b0:#020b1a;
+  --b1:#051228;
+  --b2:#0a2250;
+  --b3:#1040a0;
+  --b4:#1d5cda;
+  --b5:#4d8ef5;
+  --b6:#93bcfa;
+  --b7:#cfe0ff;
+  --b8:#e8f1ff;
+  --w:#ffffff;
+  --glass:rgba(255,255,255,0.04);
+  --glass-border:rgba(255,255,255,0.08);
+}
+
+body{
+  font-family:'Manrope',sans-serif;
+  background:var(--b0);
+  color:var(--w);
+  overflow-x:hidden;
+  cursor:none;
+}
+
+/* ── CURSOR ── */
+#dot{
+  position:fixed;width:6px;height:6px;background:var(--w);
+  border-radius:50%;pointer-events:none;z-index:9999;
+  transform:translate(-50%,-50%);
+  transition:width .25s,height .25s,background .25s;
+}
+#ring{
+  position:fixed;width:32px;height:32px;
+  border:1px solid rgba(255,255,255,0.35);
+  border-radius:50%;pointer-events:none;z-index:9998;
+  transform:translate(-50%,-50%);
+}
+body:has(a:hover) #dot,body:has(button:hover) #dot{width:12px;height:12px;background:var(--b5)}
+body:has(a:hover) #ring,body:has(button:hover) #ring{width:48px;height:48px;border-color:rgba(77,142,245,0.6)}
+
+/* ── NOISE OVERLAY ── */
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:200;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity:0.025;
+}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.2rem 5%;
+  background:rgba(2,11,26,0.85);
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--glass-border);
+}
+
+/* ── HAMBURGER ── */
+.nav-right{display:flex;align-items:center;gap:1.5rem}
+.hamburger{
+  display:none;
+  flex-direction:column;justify-content:center;align-items:center;
+  width:40px;height:40px;gap:5px;
+  background:none;border:1px solid rgba(255,255,255,0.12);border-radius:4px;
+  cursor:pointer;padding:8px;
+  transition:border-color .3s,background .3s;
+  position:relative;z-index:1001;
+}
+.hamburger:hover{border-color:rgba(77,142,245,0.4);background:rgba(77,142,245,0.06)}
+.hamburger span{
+  display:block;width:20px;height:1.5px;
+  background:rgba(255,255,255,0.8);
+  transition:transform .4s cubic-bezier(.16,1,.3,1),opacity .3s,width .3s;
+  transform-origin:center;
+}
+.hamburger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0;width:0}
+.hamburger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+
+/* ── MOBILE MENU OVERLAY ── */
+.mobile-menu{
+  display:none;
+  position:fixed;inset:0;z-index:999;
+  background:rgba(2,11,26,0.97);
+  backdrop-filter:blur(32px);
+  -webkit-backdrop-filter:blur(32px);
+  flex-direction:column;justify-content:center;align-items:center;
+  gap:2.5rem;
+  opacity:0;pointer-events:none;
+  transition:opacity .4s cubic-bezier(.16,1,.3,1);
+}
+.mobile-menu.show{
+  opacity:1;pointer-events:all;
+}
+.mobile-menu a{
+  font-family:'Big Shoulders Display',sans-serif;
+  font-size:clamp(2.2rem,8vw,3.5rem);
+  font-weight:700;letter-spacing:0.05em;text-transform:uppercase;
+  color:rgba(255,255,255,0.55);text-decoration:none;
+  transition:color .3s,transform .3s;
+  transform:translateY(20px);
+  opacity:0;
+}
+.mobile-menu.show a{
+  opacity:1;transform:translateY(0);
+}
+.mobile-menu.show a:nth-child(1){transition-delay:.08s}
+.mobile-menu.show a:nth-child(2){transition-delay:.13s}
+.mobile-menu.show a:nth-child(3){transition-delay:.18s}
+.mobile-menu.show a:nth-child(4){transition-delay:.23s}
+.mobile-menu.show a:nth-child(5){transition-delay:.28s}
+.mobile-menu a:hover{color:var(--w)}
+.mobile-menu .mm-cta{
+  font-family:'Manrope',sans-serif;
+  font-size:0.88rem;font-weight:700;letter-spacing:0.14em;
+  color:var(--w);
+  padding:1rem 3rem;border-radius:4px;
+  background:linear-gradient(135deg,var(--b3),var(--b4),var(--b5));
+  border:1px solid rgba(77,142,245,0.3);
+  margin-top:1rem;
+  transition-delay:.33s !important;
+}
+.mobile-menu-divider{
+  width:40px;height:1px;
+  background:rgba(255,255,255,0.1);
+  margin:.5rem 0;
+  opacity:0;transition:opacity .3s;
+  transition-delay:.26s;
+}
+.mobile-menu.show .mobile-menu-divider{opacity:1}
+.logo{
+  font-family:'Playfair Display',serif;
+  font-size:1.3rem;font-weight:400;letter-spacing:0.04em;
+  color:var(--w);text-decoration:none;
+  display:flex;align-items:center;gap:2px;
+}
+.logo em{font-style:italic;font-weight:400;color:var(--b5)}
+.logo span{font-weight:700;font-style:normal;color:var(--w)}
+.nl{display:flex;gap:2.5rem;list-style:none}
+.nl a{
+  font-size:0.72rem;font-weight:500;letter-spacing:0.14em;
+  text-transform:uppercase;color:rgba(255,255,255,0.45);
+  text-decoration:none;transition:color .2s;
+}
+.nl a:hover{color:var(--w)}
+/* ── NAV CTA BUTTON ── */
+.nc{
+  font-size:0.72rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--b0);background:var(--w);
+  padding:0.6rem 1.6rem;border-radius:100px;
+  text-decoration:none;
+  position:relative;overflow:hidden;
+  transition:color .3s,background .3s,transform .25s,box-shadow .3s;
+  cursor:none;
+}
+.nc::before{
+  content:'';
+  position:absolute;inset:0;border-radius:100px;
+  background:linear-gradient(90deg,var(--b5),var(--b4),var(--b5));
+  background-size:200% 100%;
+  opacity:0;transition:opacity .35s;
+}
+.nc::after{
+  content:'';
+  position:absolute;inset:0;border-radius:100px;
+  background:linear-gradient(90deg,transparent 30%,rgba(255,255,255,0.45) 50%,transparent 70%);
+  transform:translateX(-100%);transition:transform .55s ease;
+}
+.nc:hover{
+  color:var(--w);
+  background:transparent;
+  transform:translateY(-2px);
+  box-shadow:0 8px 28px rgba(77,142,245,0.35);
+}
+.nc:hover::before{opacity:1;animation:ncGrad .9s ease infinite alternate}
+.nc:hover::after{transform:translateX(100%)}
+.nc span{position:relative;z-index:1}
+@keyframes ncGrad{from{background-position:0% 50%}to{background-position:100% 50%}}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  padding-top:72px;
+  position:relative;overflow:hidden;
+}
+
+/* left panel */
+.hero-left{
+  display:flex;flex-direction:column;justify-content:center;
+  padding:5rem 5% 5rem 5%;
+  position:relative;z-index:1;
+  border-right:1px solid var(--glass-border);
+}
+.hero-eye{
+  display:inline-flex;align-items:center;gap:10px;
+  font-size:0.68rem;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;
+  color:var(--b5);margin-bottom:2.5rem;
+  opacity:0;animation:fadeUp .8s ease forwards .3s;
+}
+.hero-eye::before{content:'';width:24px;height:1px;background:var(--b5)}
+.hero-eye::after{
+  content:'';width:6px;height:6px;border-radius:50%;background:var(--b5);
+  animation:pulse 2s ease infinite;
+}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(77,142,245,0.7)}50%{box-shadow:0 0 0 8px rgba(77,142,245,0)}}
+
+.hero-title{
+  font-family:'Big Shoulders Display',sans-serif;
+  font-size:clamp(4rem,7vw,7.5rem);
+  line-height:0.9;
+  font-weight:900;
+  letter-spacing:-0.01em;
+  margin-bottom:2.5rem;
+  position:relative;z-index:1;
+}
+.ht-line{overflow:hidden;display:block}
+.ht-line span{
+  display:block;
+  opacity:0;transform:translateY(110%);
+  animation:lineUp 1s cubic-bezier(.16,1,.3,1) forwards;
+}
+.ht-line:nth-child(1) span{animation-delay:.4s;color:var(--w)}
+.ht-line:nth-child(2) span{animation-delay:.6s;color:transparent;-webkit-text-stroke:1.5px rgba(255,255,255,0.25)}
+.ht-line:nth-child(3) span{animation-delay:.8s;color:var(--b5)}
+@keyframes lineUp{to{opacity:1;transform:translateY(0)}}
+
+.hero-desc{
+  font-size:0.95rem;line-height:1.85;
+  color:rgba(255,255,255,0.45);font-weight:300;
+  max-width:400px;margin-bottom:2.5rem;
+  opacity:0;animation:fadeUp .8s ease forwards 1s;
+}
+.hero-btns{
+  display:flex;gap:1.2rem;align-items:center;
+  opacity:0;animation:fadeUp .8s ease forwards 1.2s;
+}
+
+/* ── PRIMARY HERO BUTTON ── */
+.btn-hero{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:'Manrope',sans-serif;
+  font-size:0.8rem;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;
+  color:var(--w);text-decoration:none;
+  padding:0.9rem 2.2rem;border-radius:4px;
+  position:relative;overflow:hidden;
+  background:linear-gradient(135deg,var(--b3) 0%,var(--b4) 50%,var(--b5) 100%);
+  background-size:200% 200%;
+  background-position:100% 100%;
+  border:1px solid rgba(77,142,245,0.3);
+  box-shadow:
+    0 0 0 0 rgba(77,142,245,0),
+    inset 0 1px 0 rgba(255,255,255,0.12);
+  transition:
+    background-position .5s cubic-bezier(.16,1,.3,1),
+    transform .28s cubic-bezier(.16,1,.3,1),
+    box-shadow .35s ease,
+    border-color .3s;
+  cursor:none;
+}
+.btn-hero::before{
+  content:'';
+  position:absolute;top:0;left:-75%;width:50%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent);
+  transform:skewX(-20deg);
+  transition:left .6s cubic-bezier(.16,1,.3,1);
+}
+.btn-hero::after{
+  content:'';
+  position:absolute;inset:0;
+  border-radius:4px;
+  background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,0.12) 0%,transparent 60%);
+  opacity:0;transition:opacity .3s;
+}
+.btn-hero:hover{
+  background-position:0% 0%;
+  transform:translateY(-3px);
+  box-shadow:
+    0 12px 32px rgba(29,92,218,0.45),
+    0 4px 12px rgba(77,142,245,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.2);
+  border-color:rgba(77,142,245,0.6);
+}
+.btn-hero:hover::before{left:130%}
+.btn-hero:hover::after{opacity:1}
+.btn-hero:active{transform:translateY(-1px);box-shadow:0 6px 18px rgba(29,92,218,0.4)}
+
+/* ── GHOST / SECONDARY BUTTON ── */
+.btn-ghost{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:'Manrope',sans-serif;
+  font-size:0.8rem;font-weight:600;letter-spacing:0.13em;text-transform:uppercase;
+  color:rgba(255,255,255,0.5);text-decoration:none;
+  padding:0.9rem 2rem;border-radius:4px;
+  position:relative;overflow:hidden;
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.1);
+  transition:
+    color .3s,
+    border-color .3s,
+    background .3s,
+    transform .28s cubic-bezier(.16,1,.3,1),
+    box-shadow .3s;
+  cursor:none;
+}
+.btn-ghost::before{
+  content:'';
+  position:absolute;inset:0;border-radius:4px;
+  background:linear-gradient(135deg,rgba(77,142,245,0.1) 0%,rgba(16,64,160,0.15) 100%);
+  opacity:0;transition:opacity .35s;
+}
+.btn-ghost::after{
+  content:'';
+  position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--b5),transparent);
+  transform:scaleX(0);transform-origin:center;
+  transition:transform .45s cubic-bezier(.16,1,.3,1);
+}
+.btn-ghost:hover{
+  color:var(--w);
+  border-color:rgba(77,142,245,0.4);
+  background:rgba(77,142,245,0.05);
+  transform:translateY(-3px);
+  box-shadow:0 8px 24px rgba(16,64,160,0.2);
+}
+.btn-ghost:hover::before{opacity:1}
+.btn-ghost:hover::after{transform:scaleX(1)}
+.btn-ghost .a{
+  display:inline-block;
+  transition:transform .35s cubic-bezier(.16,1,.3,1);
+}
+.btn-ghost:hover .a{transform:translateX(5px)}
+.btn-ghost:active{transform:translateY(-1px)}
+.hero-stats{
+  display:flex;gap:0;
+  margin-top:3.5rem;padding-top:2.5rem;
+  border-top:1px solid var(--glass-border);
+  opacity:0;animation:fadeUp .8s ease forwards 1.4s;
+}
+.hsr-item{flex:1;padding:0 1.5rem;border-right:1px solid var(--glass-border)}
+.hsr-item:first-child{padding-left:0}
+.hsr-item:last-child{border-right:none}
+.hsr-n{
+  font-family:'Instrument Serif',serif;
+  font-size:2.5rem;font-weight:400;
+  color:var(--w);display:block;line-height:1;
+}
+.hsr-l{font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.3);display:block;margin-top:5px}
+
+/* right panel */
+.hero-right{
+  display:flex;flex-direction:column;justify-content:center;
+  padding:5rem 5%;
+  position:relative;z-index:1;
+  overflow:hidden;
+}
+/* Animated mesh gradient on right */
+.hero-right::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 70% 70% at 80% 20%,rgba(29,92,218,0.35) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 60% at 20% 80%,rgba(16,64,160,0.3) 0%,transparent 60%),
+    radial-gradient(ellipse 40% 40% at 60% 55%,rgba(77,142,245,0.12) 0%,transparent 55%);
+  animation:meshMove 10s ease-in-out infinite alternate;
+  pointer-events:none;
+}
+@keyframes meshMove{
+  0%{opacity:0.8;transform:scale(1)}
+  100%{opacity:1;transform:scale(1.06)}
+}
+/* Grid on right */
+.hero-right::after{
+  content:'';position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px);
+  background-size:48px 48px;
+  pointer-events:none;
+}
+
+/* Floating state cards */
+.state-cards{
+  position:relative;z-index:2;
+  display:flex;flex-direction:column;gap:1px;
+  background:var(--glass-border);
+  border:1px solid var(--glass-border);
+  opacity:0;animation:fadeUp .9s ease forwards 1s;
+}
+.sc{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.6rem 2rem;
+  background:rgba(5,18,40,0.7);
+  backdrop-filter:blur(12px);
+  cursor:default;
+  transition:background .3s;
+  position:relative;overflow:hidden;
+}
+.sc::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;
+  width:2px;background:var(--b4);
+  transform:scaleY(0);transform-origin:bottom;
+  transition:transform .4s cubic-bezier(.16,1,.3,1);
+}
+.sc:hover{background:rgba(10,34,80,0.8)}
+.sc:hover::before{transform:scaleY(1)}
+.sc-name{
+  font-family:'Big Shoulders Display',sans-serif;
+  font-size:1.6rem;font-weight:700;letter-spacing:0.04em;
+  color:rgba(255,255,255,0.85);
+  transition:color .3s;
+}
+.sc:hover .sc-name{color:var(--w)}
+.sc-right{display:flex;align-items:center;gap:1rem}
+.sc-info{font-size:0.72rem;color:rgba(255,255,255,0.25);text-align:right;font-weight:300}
+.sc-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--b5);flex-shrink:0;
+  animation:dotBlink 2.5s ease-in-out infinite;
+}
+.sc:nth-child(2) .sc-dot{animation-delay:.8s}
+.sc:nth-child(3) .sc-dot{animation-delay:1.6s}
+@keyframes dotBlink{0%,100%{opacity:.25;box-shadow:none}50%{opacity:1;box-shadow:0 0 10px rgba(77,142,245,0.7)}}
+
+/* tagline below cards */
+.hero-tagline{
+  position:relative;z-index:2;
+  margin-top:2rem;
+  font-family:'Instrument Serif',serif;
+  font-size:1.25rem;font-style:italic;font-weight:400;
+  color:rgba(255,255,255,0.3);line-height:1.5;
+  padding-top:2rem;border-top:1px solid var(--glass-border);
+  opacity:0;animation:fadeUp .8s ease forwards 1.3s;
+}
+.hero-tagline em{font-style:normal;color:var(--b5)}
+
+/* orbs (global, behind both panels) */
+.aurora{
+  position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 60% 50% at 15% 50%,rgba(16,64,160,0.2) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 40% at 85% 50%,rgba(29,92,218,0.15) 0%,transparent 60%);
+}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none}
+.orb1{width:400px;height:400px;background:rgba(29,92,218,0.15);top:-100px;left:10%;animation:orbFloat 12s ease-in-out infinite}
+.orb2{width:250px;height:250px;background:rgba(77,142,245,0.1);bottom:5%;right:15%;animation:orbFloat 16s ease-in-out infinite reverse}
+.grid-lines{display:none}
+.orb3{display:none}
+@keyframes orbFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-30px) scale(1.06)}}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── SCROLL STRIP ── */
+.strip{
+  border-top:1px solid var(--glass-border);
+  border-bottom:1px solid var(--glass-border);
+  overflow:hidden;padding:1rem 0;
+  background:rgba(255,255,255,0.02);
+}
+.strip-track{
+  display:inline-flex;white-space:nowrap;
+  animation:strip 30s linear infinite;
+}
+.si{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:1rem;letter-spacing:0.2em;
+  color:rgba(255,255,255,0.15);padding:0 2.5rem;
+}
+.si.lit{color:var(--b5)}
+@keyframes strip{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ── REVEAL ── */
+.rv{opacity:0;transform:translateY(40px);transition:opacity .9s cubic-bezier(.16,1,.3,1),transform .9s cubic-bezier(.16,1,.3,1)}
+.rv.on{opacity:1;transform:none}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}
+.d4{transition-delay:.4s}.d5{transition-delay:.5s}
+
+/* ── SECTION HELPERS ── */
+section{padding:8rem 5%}
+.st{font-size:0.68rem;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--b5);display:flex;align-items:center;gap:10px;margin-bottom:1.2rem}
+.st::before{content:'';width:24px;height:1px;background:var(--b5)}
+.sh{
+  font-family:'Instrument Serif',serif;
+  font-size:clamp(2.4rem,4vw,3.8rem);
+  font-weight:400;line-height:1.1;margin-bottom:1.2rem;
+}
+.sh em{font-style:italic;color:var(--b5)}
+.sb{font-size:0.92rem;line-height:1.9;color:rgba(255,255,255,0.45);font-weight:300;max-width:500px}
+
+/* ── SERVICES ── */
+.services{border-top:1px solid var(--glass-border)}
+.svc-header{
+  display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:end;
+  margin-bottom:4rem;padding-bottom:3.5rem;
+  border-bottom:1px solid var(--glass-border);
+}
+.svc-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:1px;background:var(--glass-border);
+}
+.svc{
+  background:var(--b0);
+  padding:2.8rem 2.2rem;cursor:default;
+  position:relative;overflow:hidden;
+  transition:background .3s;
+}
+.svc::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(29,92,218,0.15),transparent);
+  opacity:0;transition:opacity .4s;
+}
+.svc:hover{background:rgba(13,34,80,0.8)}
+.svc:hover::before{opacity:1}
+.svc-n{
+  font-family:'Instrument Serif',serif;
+  font-size:3.5rem;font-weight:400;
+  color:rgba(255,255,255,0.06);
+  line-height:1;margin-bottom:1.8rem;
+  transition:color .3s;
+}
+.svc:hover .svc-n{color:rgba(77,142,245,0.2)}
+.svc h3{font-size:0.95rem;font-weight:600;color:var(--w);margin-bottom:.6rem;letter-spacing:.02em}
+.svc p{font-size:0.82rem;line-height:1.8;color:rgba(255,255,255,0.4);font-weight:300}
+.svc-link{
+  display:inline-flex;align-items:center;gap:6px;
+  margin-top:1.5rem;
+  font-size:0.72rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;
+  color:rgba(255,255,255,0.2);transition:color .3s;
+  text-decoration:none;
+}
+.svc:hover .svc-link{color:var(--b5)}
+.svc-link .a{transition:transform .3s}
+.svc:hover .svc-link .a{transform:translateX(5px)}
+
+/* ── CITIES ── */
+.cities{
+  background:var(--b1);
+  border-top:1px solid var(--glass-border);
+  border-bottom:1px solid var(--glass-border);
+}
+.city-head{
+  display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:end;
+  margin-bottom:4rem;padding-bottom:3.5rem;
+  border-bottom:1px solid var(--glass-border);
+}
+.city-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--glass-border)}
+.ct{
+  background:var(--b1);
+  padding:2.5rem 2rem;cursor:default;
+  position:relative;overflow:hidden;
+  transition:background .3s;
+}
+.ct:hover{background:rgba(10,34,80,0.9)}
+.ct-state{
+  font-size:0.62rem;letter-spacing:0.18em;text-transform:uppercase;
+  color:rgba(255,255,255,0.25);margin-bottom:.8rem;font-weight:500;
+}
+.ct-name{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:2rem;letter-spacing:0.06em;color:var(--w);
+  margin-bottom:1rem;line-height:1;
+}
+.ct-desc{font-size:0.78rem;line-height:1.75;color:rgba(255,255,255,0.3);font-weight:300;margin-bottom:1.5rem}
+.ct-badge{
+  display:inline-block;
+  font-size:0.6rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--b5);border:1px solid rgba(77,142,245,0.3);
+  padding:0.25rem 0.7rem;
+}
+.ct-dot{
+  position:absolute;top:1.8rem;right:1.8rem;
+  width:8px;height:8px;border-radius:50%;background:var(--b5);
+  animation:dotPulse 2s ease-in-out infinite;
+}
+@keyframes dotPulse{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}
+
+/* ── PROCESS ── */
+.process{border-top:1px solid var(--glass-border)}
+.proc-head{
+  display:grid;grid-template-columns:1fr 2fr;gap:5rem;align-items:end;
+  margin-bottom:5rem;padding-bottom:4rem;
+  border-bottom:1px solid var(--glass-border);
+}
+.steps{display:flex;flex-direction:column;gap:0}
+.step{
+  display:grid;grid-template-columns:72px 1fr auto;
+  align-items:center;gap:2.5rem;
+  padding:2.2rem 0;
+  border-bottom:1px solid var(--glass-border);
+  cursor:default;
+  transition:padding .3s;
+  position:relative;
+}
+.step:last-child{border-bottom:none}
+.step::before{
+  content:'';position:absolute;left:-5%;right:-5%;top:0;bottom:0;
+  background:rgba(16,64,160,0.08);
+  transform:scaleX(0);transform-origin:left;
+  transition:transform .4s cubic-bezier(.16,1,.3,1);
+  z-index:0;
+}
+.step:hover::before{transform:scaleX(1)}
+.step-num{
+  font-family:'Instrument Serif',serif;
+  font-size:2.8rem;font-weight:400;
+  color:rgba(255,255,255,0.08);
+  line-height:1;position:relative;z-index:1;
+  transition:color .3s;
+}
+.step:hover .step-num{color:rgba(77,142,245,0.4)}
+.step-body{position:relative;z-index:1}
+.step-title{font-size:1rem;font-weight:600;color:var(--w);margin-bottom:.3rem}
+.step-desc{font-size:0.82rem;line-height:1.75;color:rgba(255,255,255,0.38);font-weight:300}
+.step-tag{
+  font-family:'Instrument Serif',serif;
+  font-size:0.8rem;font-style:italic;
+  color:rgba(255,255,255,0.2);
+  white-space:nowrap;position:relative;z-index:1;
+  transition:color .3s;
+}
+.step:hover .step-tag{color:var(--b5)}
+
+/* ── TESTIMONIALS ── */
+.testimonials{
+  background:var(--b1);
+  border-top:1px solid var(--glass-border);
+}
+.test-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:4rem}
+.tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+.tcard{
+  background:var(--glass);
+  border:1px solid var(--glass-border);
+  padding:2.5rem;
+  position:relative;overflow:hidden;
+  transition:border-color .3s,transform .3s;
+  cursor:default;
+}
+.tcard::before{
+  content:'';position:absolute;
+  top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--b5),transparent);
+  transform:scaleX(0);transform-origin:center;
+  transition:transform .5s cubic-bezier(.16,1,.3,1);
+}
+.tcard:hover{border-color:rgba(77,142,245,0.3);transform:translateY(-6px)}
+.tcard:hover::before{transform:scaleX(1)}
+.tc-city{
+  font-size:0.65rem;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;
+  color:var(--b5);margin-bottom:1.5rem;
+  display:flex;align-items:center;gap:8px;
+}
+.tc-city::before{content:'';width:14px;height:1px;background:var(--b5)}
+.tc-quote{
+  font-family:'Instrument Serif',serif;
+  font-size:1.1rem;font-style:italic;font-weight:400;
+  line-height:1.72;color:rgba(255,255,255,0.75);
+  margin-bottom:2rem;
+}
+.tc-line{width:24px;height:1px;background:var(--glass-border);margin-bottom:1.5rem}
+.tc-name{font-size:0.85rem;font-weight:600;color:var(--w);margin-bottom:.2rem}
+.tc-role{font-size:0.72rem;color:rgba(255,255,255,0.3);font-weight:300}
+
+/* ── CONTACT ── */
+.contact{
+  display:grid;grid-template-columns:1fr 1fr;
+  border-top:1px solid var(--glass-border);
+}
+.cl{
+  padding:8rem 5%;
+  background:var(--b2);
+  display:flex;flex-direction:column;justify-content:center;
+  position:relative;overflow:hidden;
+  border-right:1px solid var(--glass-border);
+}
+.cl::before{
+  content:'';position:absolute;
+  top:-200px;left:-200px;
+  width:600px;height:600px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(29,92,218,0.25) 0%,transparent 65%);
+  pointer-events:none;
+}
+.cl .sh{position:relative;z-index:1}
+.cl .sb{position:relative;z-index:1;margin-bottom:2.5rem}
+.cinfo{display:flex;flex-direction:column;gap:.7rem;position:relative;z-index:1}
+.ci-row{font-size:0.82rem;color:rgba(255,255,255,0.35);font-weight:300}
+.ci-row strong{color:rgba(255,255,255,0.65);font-weight:400}
+.cr{padding:8rem 5%;display:flex;flex-direction:column;justify-content:center}
+
+/* Form */
+.form{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+.fg{display:flex;flex-direction:column;gap:.45rem}
+.fg.full{grid-column:span 2}
+.fg label{
+  font-size:0.65rem;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;
+  color:rgba(255,255,255,0.3);
+}
+.fg input,.fg select,.fg textarea{
+  background:rgba(255,255,255,0.04);
+  border:none;border-bottom:1px solid rgba(255,255,255,0.1);
+  padding:.75rem 0;
+  font-family:'Manrope',sans-serif;font-size:0.88rem;font-weight:300;
+  color:var(--w);outline:none;width:100%;
+  transition:border-color .2s;
+}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--b5)}
+.fg select option{background:var(--b1);color:var(--w)}
+.fg textarea{resize:none;height:80px}
+::placeholder{color:rgba(255,255,255,0.2)}
+/* ── FORM SUBMIT BUTTON ── */
+.fsub{
+  grid-column:span 2;
+  border:none;padding:1.1rem 2rem;
+  font-family:'Manrope',sans-serif;font-size:0.78rem;font-weight:700;
+  letter-spacing:0.13em;text-transform:uppercase;
+  cursor:none;border-radius:4px;
+  margin-top:.8rem;
+  color:var(--w);
+  background:linear-gradient(135deg,var(--b3) 0%,var(--b4) 50%,var(--b5) 100%);
+  background-size:200% 200%;
+  background-position:100% 100%;
+  position:relative;overflow:hidden;
+  border:1px solid rgba(77,142,245,0.25);
+  box-shadow:0 4px 16px rgba(29,92,218,0.25),inset 0 1px 0 rgba(255,255,255,0.1);
+  transition:
+    background-position .5s cubic-bezier(.16,1,.3,1),
+    transform .25s cubic-bezier(.16,1,.3,1),
+    box-shadow .3s ease;
+}
+.fsub::before{
+  content:'';
+  position:absolute;top:0;left:-75%;width:50%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);
+  transform:skewX(-20deg);
+  transition:left .65s cubic-bezier(.16,1,.3,1);
+}
+.fsub::after{
+  content:'';
+  position:absolute;inset:0;
+  background:radial-gradient(circle at 50% 120%,rgba(255,255,255,0.15) 0%,transparent 60%);
+  opacity:0;transition:opacity .3s;
+}
+.fsub:hover{
+  background-position:0% 0%;
+  transform:translateY(-3px);
+  box-shadow:
+    0 16px 40px rgba(29,92,218,0.45),
+    0 6px 16px rgba(77,142,245,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.2);
+}
+.fsub:hover::before{left:130%}
+.fsub:hover::after{opacity:1}
+.fsub:active{transform:translateY(-1px);box-shadow:0 6px 20px rgba(29,92,218,0.4)}
+
+/* ── FOOTER ── */
+footer{
+  background:var(--b0);
+  border-top:1px solid var(--glass-border);
+  padding:4rem 5% 2rem;
+}
+.ft{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;
+  padding-bottom:3rem;border-bottom:1px solid var(--glass-border);margin-bottom:2rem}
+.flogo{
+  font-family:'Playfair Display',serif;
+  font-size:1.3rem;font-weight:400;letter-spacing:0.04em;
+  color:var(--w);display:block;margin-bottom:.8rem;
+  text-decoration:none;display:flex;align-items:center;gap:2px;
+}
+.flogo span{font-weight:700;color:var(--w)}
+.flogo em{font-style:italic;color:var(--b5)}
+.fbrand p{font-size:.82rem;line-height:1.75;color:rgba(255,255,255,.22);font-weight:300;max-width:260px}
+.fc h5{font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:1rem;font-weight:600}
+.fc ul{list-style:none;display:flex;flex-direction:column;gap:.5rem}
+.fc a{color:rgba(255,255,255,.18);text-decoration:none;font-size:.82rem;font-weight:300;transition:color .2s}
+.fc a:hover{color:rgba(255,255,255,.65)}
+.fbot{display:flex;justify-content:space-between;font-size:.72rem;color:rgba(255,255,255,.12);font-weight:300}
+
+/* ── RESPONSIVE ── */
+
+/* Touch devices: hide custom cursor */
+@media(hover:none){
+  #dot,#ring{display:none}
+  body{cursor:auto}
+  .btn-hero,.btn-ghost,.nc,.hamburger,.fsub{cursor:pointer}
+}
+
+/* ── LARGE SCREENS (1440px+) ── */
+@media(min-width:1440px){
+  section{padding:9rem 7%}
+  nav{padding:1.4rem 7%}
+  .hero-left{padding:5rem 7% 5rem 7%}
+  .hero-right{padding:5rem 7%}
+  .hero-title{font-size:8.5rem}
+  .cl,.cr{padding:9rem 7%}
+  footer{padding:5rem 7% 2.5rem}
+  .svc-header,.city-head{gap:6rem}
+}
+
+/* ── TABLET/MEDIUM (max 1100px) ── */
+@media(max-width:1100px){
+  .hero{grid-template-columns:1fr}
+  .hero-right{display:none}
+  .hero-left{
+    padding:4.5rem 5%;
+    border-right:none;
+    min-height:calc(100vh - 68px);
+  }
+  .hero-title{font-size:clamp(4rem,10vw,7rem)}
+  .city-tiles{grid-template-columns:repeat(2,1fr)}
+  .svc-header{grid-template-columns:1fr;gap:1.5rem}
+  .city-head{grid-template-columns:1fr;gap:1.5rem}
+  .proc-head{grid-template-columns:1fr;gap:2rem}
+  .contact{grid-template-columns:1fr}
+  .cl{border-right:none;border-bottom:1px solid var(--glass-border)}
+  .ft{grid-template-columns:1fr 1fr;gap:2rem}
+  /* nav */
+  .nl{display:none}
+  .hamburger{display:flex}
+  .mobile-menu{display:flex}
+  /* hide desktop CTA, it's in mobile menu */
+  .nav-right > .nc{display:none}
+  .tgrid{grid-template-columns:repeat(2,1fr)}
+  .svc-grid{grid-template-columns:repeat(2,1fr)}
+}
+
+/* ── MOBILE (max 768px) ── */
+@media(max-width:768px){
+  section{padding:5rem 5%}
+  .hero-left{
+    padding:3.5rem 5%;
+    justify-content:flex-start;
+    padding-top:calc(68px + 3rem);
+  }
+  .hero{padding-top:0;min-height:auto}
+  .hero-title{font-size:clamp(3.8rem,15vw,7rem)}
+  .hero-eye{font-size:0.6rem;margin-bottom:1.8rem}
+  .hero-desc{font-size:0.88rem;max-width:100%}
+  .hero-btns{
+    flex-direction:column;
+    align-items:stretch;
+    gap:0.85rem;
+  }
+  .btn-hero,.btn-ghost{
+    justify-content:center;
+    padding:1rem 1.5rem;
+    font-size:0.78rem;
+  }
+  .hero-stats{
+    margin-top:2.5rem;padding-top:2rem;
+    gap:0;
+  }
+  .hsr-item{padding:0 1rem}
+  .hsr-n{font-size:2rem}
+
+  /* services */
+  .svc-grid{grid-template-columns:1fr}
+  .svc{padding:2rem 1.5rem}
+  .svc-header{padding-bottom:2rem;margin-bottom:2.5rem}
+
+  /* cities */
+  .city-tiles{grid-template-columns:1fr}
+  .city-head{padding-bottom:2rem;margin-bottom:2.5rem}
+
+  /* process */
+  .proc-head{margin-bottom:3rem;padding-bottom:2.5rem}
+  .step{grid-template-columns:52px 1fr;gap:1.5rem;padding:1.8rem 0}
+  .step-tag{display:none}
+  .step-num{font-size:2.2rem}
+
+  /* testimonials */
+  .tgrid{grid-template-columns:1fr}
+  .test-head{flex-direction:column;gap:1.5rem;align-items:flex-start}
+  .test-head .btn-hero{align-self:flex-start}
+
+  /* contact */
+  .cl,.cr{padding:4rem 5%}
+  .form{grid-template-columns:1fr}
+  .fg.full,.fsub{grid-column:span 1}
+  .fsub{padding:1rem 1.5rem}
+
+  /* section headings */
+  .sh{font-size:clamp(2rem,7vw,3rem)}
+
+  /* footer */
+  .ft{grid-template-columns:1fr;gap:2rem}
+  .fbot{flex-direction:column;gap:0.5rem;text-align:center}
+  footer{padding:3rem 5% 2rem}
+}
+
+/* ── SMALL MOBILE (max 480px) ── */
+@media(max-width:480px){
+  section{padding:4rem 4%}
+  nav{padding:1rem 4%}
+  .hero-left{padding:3rem 4%;padding-top:calc(64px + 2.5rem)}
+  .hero-title{font-size:clamp(3.2rem,18vw,5.5rem);line-height:0.88}
+  .hero-eye{font-size:0.58rem;letter-spacing:0.14em}
+  .hero-desc{font-size:0.85rem}
+  .hero-stats{flex-direction:column;gap:1.2rem}
+  .hsr-item{
+    padding:0;border-right:none;
+    padding-bottom:1.2rem;
+    border-bottom:1px solid var(--glass-border);
+  }
+  .hsr-item:last-child{border-bottom:none;padding-bottom:0}
+  .hsr-n{font-size:2.4rem}
+  .svc-header,.city-head,.proc-head{margin-bottom:2rem;padding-bottom:1.5rem}
+  .sh{font-size:clamp(1.9rem,8vw,2.4rem)}
+  .step{grid-template-columns:44px 1fr;gap:1rem;padding:1.5rem 0}
+  .step-num{font-size:1.9rem}
+  .cl,.cr{padding:3rem 4%}
+  .tcard{padding:1.8rem}
+  .tc-quote{font-size:1rem}
+  .ct{padding:2rem 1.5rem}
+  footer{padding:2.5rem 4% 1.5rem}
+  .ft{gap:1.5rem}
+  .ci-row{font-size:0.78rem}
+  .mobile-menu a{font-size:clamp(2rem,10vw,3rem)}
+}
+</style>
+</head>
+<body>
+
+<div id="dot"></div>
+<div id="ring"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo"><span>Aspire</span> <em>Education</em></a>
+  <ul class="nl">
+    <li><a href="#services">Services</a></li>
+    <li><a href="#cities">Cities</a></li>
+    <li><a href="#process">Process</a></li>
+    <li><a href="#stories">Stories</a></li>
+  </ul>
+  <div class="nav-right">
+    <a href="#contact" class="nc"><span>Free Consult</span></a>
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu" role="navigation" aria-label="Mobile navigation">
+  <a href="#services" class="mm-link">Services</a>
+  <a href="#cities" class="mm-link">Cities</a>
+  <a href="#process" class="mm-link">Process</a>
+  <a href="#stories" class="mm-link">Stories</a>
+  <div class="mobile-menu-divider"></div>
+  <a href="#contact" class="mm-cta mm-link">Free Consult →</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="aurora"></div>
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+
+  <!-- LEFT -->
+  <div class="hero-left">
+    <div class="hero-eye">South India's Career Consultancy</div>
+    <div class="hero-title">
+      <span class="ht-line"><span>FIND</span></span>
+      <span class="ht-line"><span>YOUR</span></span>
+      <span class="ht-line"><span>PATH</span></span>
+    </div>
+    <p class="hero-desc">Aspire Education guides students and professionals across Kerala, Karnataka &amp; Tamil Nadu — with honest career advice, college admissions support, and real clarity.</p>
+    <div class="hero-btns">
+      <a href="#contact" class="btn-hero">Book Free Session →</a>
+      <a href="#process" class="btn-ghost">How it works <span class="a">→</span></a>
+    </div>
+    <div class="hero-stats">
+      <div class="hsr-item">
+        <span class="hsr-n">2,000+</span>
+        <span class="hsr-l">Students Guided</span>
+      </div>
+      <div class="hsr-item">
+        <span class="hsr-n">98%</span>
+        <span class="hsr-l">Satisfaction</span>
+      </div>
+      <div class="hsr-item">
+        <span class="hsr-n">3</span>
+        <span class="hsr-l">States</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="hero-right">
+    <div class="state-cards">
+      <div class="sc">
+        <span class="sc-name">KERALA</span>
+        <div class="sc-right">
+          <span class="sc-info">Headquarters<br>South India</span>
+          <span class="sc-dot"></span>
+        </div>
+      </div>
+      <div class="sc">
+        <span class="sc-name">KARNATAKA</span>
+        <div class="sc-right">
+          <span class="sc-info">Bangalore &amp;<br>Mangalore</span>
+          <span class="sc-dot"></span>
+        </div>
+      </div>
+      <div class="sc">
+        <span class="sc-name">TAMIL NADU</span>
+        <div class="sc-right">
+          <span class="sc-info">Chennai &amp;<br>Surrounding</span>
+          <span class="sc-dot"></span>
+        </div>
+      </div>
+    </div>
+    <p class="hero-tagline">"The right guidance at the right time<br>changes <em>everything.</em>"</p>
+  </div>
+</section>
+
+<!-- STRIP -->
+<div class="strip">
+  <div class="strip-track">
+    <span class="si">Career Guidance</span><span class="si lit"> ✦ </span>
+    <span class="si">NEET Counseling</span><span class="si lit"> ✦ </span>
+    <span class="si lit">JEE Guidance</span><span class="si lit"> ✦ </span>
+    <span class="si">College Admissions</span><span class="si lit"> ✦ </span>
+    <span class="si">Stream Selection</span><span class="si lit"> ✦ </span>
+    <span class="si lit">Kerala</span><span class="si lit"> ✦ </span>
+    <span class="si">Karnataka</span><span class="si lit"> ✦ </span>
+    <span class="si">Tamil Nadu</span><span class="si lit"> ✦ </span>
+    <span class="si">Scholarship Help</span><span class="si lit"> ✦ </span>
+    <span class="si lit">KEAM</span><span class="si lit"> ✦ </span>
+    <span class="si">Profile Building</span><span class="si lit"> ✦ </span>
+    <span class="si">Career Mapping</span><span class="si lit"> ✦ </span>
+    <span class="si">Career Guidance</span><span class="si lit"> ✦ </span>
+    <span class="si">NEET Counseling</span><span class="si lit"> ✦ </span>
+    <span class="si lit">JEE Guidance</span><span class="si lit"> ✦ </span>
+    <span class="si">College Admissions</span><span class="si lit"> ✦ </span>
+    <span class="si">Stream Selection</span><span class="si lit"> ✦ </span>
+    <span class="si lit">Kerala</span><span class="si lit"> ✦ </span>
+    <span class="si">Karnataka</span><span class="si lit"> ✦ </span>
+    <span class="si">Tamil Nadu</span><span class="si lit"> ✦ </span>
+    <span class="si">Scholarship Help</span><span class="si lit"> ✦ </span>
+    <span class="si lit">KEAM</span><span class="si lit"> ✦ </span>
+    <span class="si">Profile Building</span><span class="si lit"> ✦ </span>
+    <span class="si">Career Mapping</span><span class="si lit"> ✦ </span>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section class="services" id="services">
+  <div class="svc-header">
+    <div class="rv">
+      <p class="st">What We Do</p>
+      <h2 class="sh">Everything You Need<br>to <em>Shape Your Future</em></h2>
+    </div>
+    <p class="sb rv d2">Six focused services — built around real students, real goals, and honest guidance. No generic advice. No shortcuts.</p>
+  </div>
+  <div class="svc-grid">
+    <div class="svc rv d1">
+      <div class="svc-n">01</div>
+      <h3>Career Mapping</h3>
+      <p>Deep one-on-one sessions that identify your strengths, aptitude, and market fit — before any application is filed.</p>
+      <a href="#contact" class="svc-link">Learn more <span class="a">→</span></a>
+    </div>
+    <div class="svc rv d2">
+      <div class="svc-n">02</div>
+      <h3>College Admissions</h3>
+      <p>Expert guidance for engineering, medicine, management, law, and arts — across top institutions in South India.</p>
+      <a href="#contact" class="svc-link">Learn more <span class="a">→</span></a>
+    </div>
+    <div class="svc rv d3">
+      <div class="svc-n">03</div>
+      <h3>Entrance Exam Prep</h3>
+      <p>Structured support for NEET, JEE, KEAM, CUET, CLAT and CAT with targeted strategies and mock practice.</p>
+      <a href="#contact" class="svc-link">Learn more <span class="a">→</span></a>
+    </div>
+    <div class="svc rv d1">
+      <div class="svc-n">04</div>
+      <h3>Stream Selection</h3>
+      <p>For Class 10 students — we help you pick Science, Commerce, or Humanities based on genuine aptitude, not pressure.</p>
+      <a href="#contact" class="svc-link">Learn more <span class="a">→</span></a>
+    </div>
+    <div class="svc rv d2">
+      <div class="svc-n">05</div>
+      <h3>Scholarship Guidance</h3>
+      <p>Identify and apply for merit and need-based scholarships from government and private institutions across India.</p>
+      <a href="#contact" class="svc-link">Learn more <span class="a">→</span></a>
+    </div>
+    <div class="svc rv d3">
+      <div class="svc-n">06</div>
+      <h3>Professional Uplift</h3>
+      <p>For working professionals — upskilling pathways, MBA guidance, certification advice, and career transition plans.</p>
+      <a href="#contact" class="svc-link">Learn more <span class="a">→</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- CITIES -->
+<section class="cities" id="cities">
+  <div class="city-head">
+    <div class="rv">
+      <p class="st">Where We Are</p>
+      <h2 class="sh">Serving <em>South India</em><br>City by City</h2>
+    </div>
+    <p class="sb rv d2">In-person counselling at our offices across Kerala and Karnataka. Virtual sessions available for students anywhere in India.</p>
+  </div>
+  <div class="city-tiles">
+    <div class="ct rv d1">
+      <div class="ct-dot"></div>
+      <div class="ct-state">Headquarters</div>
+      <div class="ct-name">KERALA</div>
+      <div class="ct-desc">Our home state. Career counselling for students across Kerala — in-person and virtual sessions available.</div>
+      <span class="ct-badge">Walk-In Welcome</span>
+    </div>
+    <div class="ct rv d2">
+      <div class="ct-dot" style="animation-delay:.6s"></div>
+      <div class="ct-state">South India</div>
+      <div class="ct-name">KARNATAKA</div>
+      <div class="ct-desc">Serving students across Karnataka targeting top engineering, management and design colleges.</div>
+      <span class="ct-badge">In-Person & Virtual</span>
+    </div>
+    <div class="ct rv d3">
+      <div class="ct-dot" style="animation-delay:1.2s"></div>
+      <div class="ct-state">South India</div>
+      <div class="ct-name">TAMIL NADU</div>
+      <div class="ct-desc">Counselling students across Tamil Nadu — especially those targeting institutions in Chennai and Vellore.</div>
+      <span class="ct-badge">Virtual + Visits</span>
+    </div>
+    <div class="ct rv d4" style="background:rgba(16,64,160,0.08)">
+      <div class="ct-state">All States</div>
+      <div class="ct-name">ONLINE</div>
+      <div class="ct-desc">Can't visit in person? Our virtual counselling sessions are just as effective — available anywhere in India.</div>
+      <span class="ct-badge">Available Now</span>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="process" id="process">
+  <div class="proc-head">
+    <div class="rv">
+      <p class="st">How It Works</p>
+      <h2 class="sh">Five Steps.<br><em>Complete Clarity.</em></h2>
+    </div>
+    <p class="sb rv d2">A structured, low-stress process refined through thousands of student journeys. Every step is designed so nothing is left to guesswork.</p>
+  </div>
+  <div class="steps">
+    <div class="step rv d1">
+      <div class="step-num">01</div>
+      <div class="step-body">
+        <div class="step-title">Free Discovery Session</div>
+        <div class="step-desc">We learn about your background, goals, and interests in a genuine conversation — no forms, no pressure.</div>
+      </div>
+      <div class="step-tag">Session 1 · Free</div>
+    </div>
+    <div class="step rv d2">
+      <div class="step-num">02</div>
+      <div class="step-body">
+        <div class="step-title">Aptitude & Interest Assessment</div>
+        <div class="step-desc">Structured tools and expert analysis to identify which careers and courses genuinely suit your profile.</div>
+      </div>
+      <div class="step-tag">1–2 hrs</div>
+    </div>
+    <div class="step rv d3">
+      <div class="step-num">03</div>
+      <div class="step-body">
+        <div class="step-title">Personalised Career Roadmap</div>
+        <div class="step-desc">A written career plan — courses, colleges, entrance exams, timelines, and smart backup options.</div>
+      </div>
+      <div class="step-tag">Delivered Written</div>
+    </div>
+    <div class="step rv d4">
+      <div class="step-num">04</div>
+      <div class="step-body">
+        <div class="step-title">Application & Admission Support</div>
+        <div class="step-desc">We handle college applications, entrance registrations, documentation, and counselling rounds end-to-end.</div>
+      </div>
+      <div class="step-tag">Ongoing Support</div>
+    </div>
+    <div class="step rv d5">
+      <div class="step-num">05</div>
+      <div class="step-body">
+        <div class="step-title">Enrolled & Confident</div>
+        <div class="step-desc">Fee payment guidance, hostel advice, and a final check-in so you start your journey fully prepared.</div>
+      </div>
+      <div class="step-tag">Admission Confirmed</div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials" id="stories">
+  <div class="test-head rv">
+    <div>
+      <p class="st">Student Stories</p>
+      <h2 class="sh">What Our Students<br><em>Say</em></h2>
+    </div>
+    <a href="#contact" class="btn-hero" style="white-space:nowrap">Talk to Us →</a>
+  </div>
+  <div class="tgrid">
+    <div class="tcard rv d1">
+      <div class="tc-city">Kozhikode, Kerala</div>
+      <p class="tc-quote">"I had no idea whether to choose Science or Commerce after Class 10. One session with Aspire gave me more clarity than two years of confusion."</p>
+      <div class="tc-line"></div>
+      <div class="tc-name">Fathima Nazar</div>
+      <div class="tc-role">B.Com · MES College, Kozhikode</div>
+    </div>
+    <div class="tcard rv d2">
+      <div class="tc-city">Bangalore, Karnataka</div>
+      <p class="tc-quote">"They didn't just tell me which college — they helped me understand why it was the right fit. That's something no other consultant offered."</p>
+      <div class="tc-line"></div>
+      <div class="tc-name">Kiran Shetty</div>
+      <div class="tc-role">B.Tech CSE · RV College of Engineering</div>
+    </div>
+    <div class="tcard rv d3">
+      <div class="tc-city">Perintalmanna, Kerala</div>
+      <p class="tc-quote">"Five years of work experience and I still didn't know my next move. Aspire's professional session mapped everything out. Life-changing advice."</p>
+      <div class="tc-line"></div>
+      <div class="tc-name">Muhammed Shajahan</div>
+      <div class="tc-role">MBA · CUSAT · Career pivot to Data Analytics</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="cl">
+    <div class="rv">
+      <p class="st">Get In Touch</p>
+      <h2 class="sh">Start With a<br><em>Free Session</em></h2>
+      <p class="sb">No commitment. No fees for the first consultation. Come in, call, or WhatsApp — and let's talk about where you want to go.</p>
+    </div>
+    <div class="cinfo rv d2">
+      <div class="ci-row">📍 <strong>Kerala</strong> — South India Headquarters</div>
+      <div class="ci-row">📧 <strong>info@aspireeducation.in</strong></div>
+      <div class="ci-row">📱 <strong>+91 XXXXX XXXXX</strong> (WhatsApp)</div>
+      <div class="ci-row">🕐 Mon – Sat, <strong>9am – 6pm IST</strong></div>
+      <div class="ci-row">🏙️ Serving <strong>Kerala · Karnataka · Tamil Nadu</strong></div>
+    </div>
+  </div>
+  <div class="cr">
+    <div class="rv" style="margin-bottom:2.5rem">
+      <p class="st">Book a Session</p>
+      <h3 style="font-family:'Instrument Serif',serif;font-size:1.8rem;font-weight:400;line-height:1.2">Tell us about<br><em>yourself</em></h3>
+    </div>
+    <div class="form rv d2">
+      <div class="fg">
+        <label>First Name</label>
+        <input type="text" placeholder="Arjun">
+      </div>
+      <div class="fg">
+        <label>Last Name</label>
+        <input type="text" placeholder="Menon">
+      </div>
+      <div class="fg full">
+        <label>Phone / WhatsApp</label>
+        <input type="tel" placeholder="+91 98765 43210">
+      </div>
+      <div class="fg">
+        <label>Your State</label>
+        <select>
+          <option>Kerala</option>
+          <option>Karnataka</option>
+          <option>Tamil Nadu</option>
+          <option>Other State</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>I Need Help With</label>
+        <select>
+          <option>Choosing Career / Stream</option>
+          <option>College Admissions (UG)</option>
+          <option>NEET / JEE / KEAM Guidance</option>
+          <option>Postgraduate Admissions</option>
+          <option>Professional Career Change</option>
+          <option>Scholarship Help</option>
+        </select>
+      </div>
+      <div class="fg full">
+        <label>Message (optional)</label>
+        <textarea placeholder="Your background, goals, or any questions..."></textarea>
+      </div>
+      <button class="fsub" onclick="alert('Thank you! We will reach out within 24 hours on WhatsApp.')">
+        Book Free Session →
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft">
+    <div class="fbrand">
+      <a href="#" class="flogo"><span>Aspire</span> <em>Education</em></a>
+      <p>Honest career guidance for students and professionals across South India. Kerala-rooted, region-serving since 2022.</p>
+    </div>
+    <div class="fc">
+      <h5>Services</h5>
+      <ul>
+        <li><a href="#">Career Mapping</a></li>
+        <li><a href="#">College Admissions</a></li>
+        <li><a href="#">Entrance Prep</a></li>
+        <li><a href="#">Stream Selection</a></li>
+        <li><a href="#">Scholarships</a></li>
+      </ul>
+    </div>
+    <div class="fc">
+      <h5>We Serve</h5>
+      <ul>
+        <li><a href="#">Kerala</a></li>
+        <li><a href="#">Karnataka</a></li>
+        <li><a href="#">Tamil Nadu</a></li>
+        <li><a href="#">Online — All India</a></li>
+      </ul>
+    </div>
+    <div class="fc">
+      <h5>Follow Us</h5>
+      <ul>
+        <li><a href="#">Instagram</a></li>
+        <li><a href="#">Facebook</a></li>
+        <li><a href="#">WhatsApp</a></li>
+        <li><a href="#">YouTube</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="fbot">
+    <span>© 2024 Aspire Education. All rights reserved.</span>
+    <span>Perintalmanna, Kerala, India</span>
+  </div>
+</footer>
+
+<script>
+// Cursor
+const dot=document.getElementById('dot'),ring=document.getElementById('ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px'});
+(function loop(){rx+=(mx-rx)*.11;ry+=(my-ry)*.11;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(loop)})();
+
+// Scroll reveal
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('on')});
+},{threshold:0.08});
+document.querySelectorAll('.rv').forEach(el=>obs.observe(el));
+
+// Count-up for stats
+function countUp(el,target,suffix=''){
+  let start=0,dur=1800,step=16;
+  const inc=target/(dur/step);
+  const timer=setInterval(()=>{
+    start+=inc;
+    if(start>=target){start=target;clearInterval(timer)}
+    el.textContent=Math.floor(start).toLocaleString('en-IN')+(suffix||'');
+  },step);
+}
+const statObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const el=e.target;
+      const raw=el.dataset.val;
+      const suffix=el.dataset.suf||'';
+      countUp(el,parseFloat(raw),suffix);
+      statObs.unobserve(el);
+    }
+  });
+},{threshold:0.5});
+// Apply to stat numbers
+document.querySelectorAll('.hsr-n').forEach((el,i)=>{
+  const vals=[2000,98,3];const suf=['+','%',''];
+  el.dataset.val=vals[i];el.dataset.suf=suf[i];
+  el.textContent='0';statObs.observe(el);
+});
+// Hamburger menu
+const hamburger=document.getElementById('hamburger');
+const mobileMenu=document.getElementById('mobileMenu');
+function openMenu(){
+  hamburger.classList.add('open');
+  mobileMenu.classList.add('show');
+  hamburger.setAttribute('aria-expanded','true');
+  document.body.style.overflow='hidden';
+}
+function closeMenu(){
+  hamburger.classList.remove('open');
+  mobileMenu.classList.remove('show');
+  hamburger.setAttribute('aria-expanded','false');
+  document.body.style.overflow='';
+}
+hamburger.addEventListener('click',()=>{
+  hamburger.classList.contains('open') ? closeMenu() : openMenu();
+});
+// Close on any mobile menu link click
+document.querySelectorAll('.mm-link').forEach(link=>{
+  link.addEventListener('click',closeMenu);
+});
+// Close on Escape key
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
+</script>
+</body>
+</html>
